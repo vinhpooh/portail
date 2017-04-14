@@ -38,7 +38,7 @@ public class ServerDao {
         try (Connection connection = datasource.getConnection()) {
             // TODO : faire la requête
             StringBuilder sql = new StringBuilder();
-            sql.append("SELECT * FROM test WHERE 1=1");
+            sql.append("SELECT name, hostname FROM test WHERE 1=1");
 
             if (StringUtils.isNotBlank(filter.getProduct())) {
                 sql.append(" AND product='").append(filter.getProduct()).append("'");
@@ -56,10 +56,9 @@ public class ServerDao {
                     List<Server> servers = new ArrayList<>();
                     Server server;
                     while (resultSet.next()) {
-                        // TODO : construire la réponse
                         server = new Server();
-                        server.setName(resultSet.getString(1) + " " + resultSet.getString(2));
-                        server.setHostname(resultSet.getString(1) + " " + resultSet.getString(3));
+                        server.setName(resultSet.getString(1));
+                        server.setHostname(resultSet.getString(2));
                         servers.add(server);
                     }
                     return servers;

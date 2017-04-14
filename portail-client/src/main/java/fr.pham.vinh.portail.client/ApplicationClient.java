@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Create an inventory by requesting servers informations.
+ * Create an inventory file by requesting servers informations.
  * Created by Vinh PHAM on 07/04/2017.
  */
 public class ApplicationClient {
@@ -62,7 +62,7 @@ public class ApplicationClient {
         }
 
         // Execute the http request
-        LOGGER.debug("Execute http request");
+        LOGGER.debug("Execute http request {}", uri);
         WebClient webClient = new WebClient();
         String response = webClient.get(uri);
         LOGGER.debug("Response is {}", response);
@@ -78,11 +78,7 @@ public class ApplicationClient {
         String version = parameters.getOrDefault(VERSION_PARAMETER, "defaultVersion");
         String environment = parameters.getOrDefault(ENVIRONMENT_PARAMETER, "defaultEnvironment");
         String inventoryPath = path + "/host_" + product + "_" + version + "_" + environment;
-
-        List<String> lines = new ArrayList<>();
-        servers.forEach(server -> lines.add(server.getName() + " ansible_host=" + server.getHostname()));
-
-        InventoryGenerator.writeInventory(inventoryPath, lines, DEFAULT_CHARSET);
+        InventoryGenerator.createInventory(servers, inventoryPath, DEFAULT_CHARSET);
         LOGGER.debug("Generated inventory {}", inventoryPath);
     }
 

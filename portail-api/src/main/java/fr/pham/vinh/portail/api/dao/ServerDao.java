@@ -36,20 +36,35 @@ public class ServerDao {
      */
     public List<Server> findServers(ServerFilter filter) {
         try (Connection connection = datasource.getConnection()) {
-            // TODO : faire la requête
-            StringBuilder sql = new StringBuilder();
-            sql.append("SELECT name, hostname FROM test WHERE 1=1");
+            StringBuilder sql = new StringBuilder("SELECT sl.nom, sl.host FROM serveur_logique sl");
+            // serveur_logique --> brique_technique
+            sql.append(" INNER JOIN brique_technique bt on bt.serveur_logique_id=sl.id");
+            // brique_technique --> instance_brique_technique
+            sql.append(" INNER JOIN instance_brique_technique ibt on ibt.brique_technique_id=bt.id");
+            // instance_brique_technique --> instance
+            sql.append(" INNER JOIN instance i on i.nom=ibt.instance_nom");
+            // instance --> environnement
+            sql.append(" INNER JOIN environnement e on e.nom=i.environnement_nom");
+
+            // produit --> environnement
+            sql.append(" INNER JOIN produit p on p.id=e.produit_id");
+            // version_produit --> produit
+            sql.append(" INNER JOIN version_produit vp on vp.produit_id=p.id");
+
+            // Where clause
+            sql.append(" WHERE 1=1");
 
             if (StringUtils.isNotBlank(filter.getProduct())) {
-                sql.append(" AND product='").append(filter.getProduct()).append("'");
+                sql.append(" AND p.application_nom='").append(filter.getProduct()).append("'");
             }
             if (StringUtils.isNotBlank(filter.getVersion())) {
-                sql.append(" AND version='").append(filter.getVersion()).append("'");
+                sql.append(" AND vp.num='").append(filter.getVersion()).append("'");
             }
             if (StringUtils.isNotBlank(filter.getEnvironment())) {
-                sql.append(" AND environment='").append(filter.getEnvironment()).append("'");
+                sql.append(" AND e.nom='").append(filter.getEnvironment()).append("'");
             }
 
+            LOGGER.debug("Sql request : {}", sql.toString());
             try (PreparedStatement pstmt = connection.prepareStatement(sql.toString())) {
                 try (ResultSet resultSet = pstmt.executeQuery()) {
 

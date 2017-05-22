@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Server resource.
  */
-@Path("/")
+@Path("/servers")
 public class ServerResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerResource.class);
@@ -35,9 +35,8 @@ public class ServerResource {
      * @return the list of servers
      */
     @GET
-    @Path("/servers")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getServers(@QueryParam("product") String product,
+    public Response getAll(@QueryParam("product") String product,
                                @QueryParam("version") String version,
                                @QueryParam("environment") String environment) {
         LOGGER.debug("Get servers");
